@@ -1,8 +1,8 @@
 streamlit
 pandas
-duckdb
+duckdb==0.10.2
 openpyxl
 xlsxwriter
 python-dotenv
 openai
-text\nstreamlit\npandas\nduckdb==0.10.2\nopenpyxl\nxlsxwriter\npython-dotenv\nopenai\npyarrow\n
+pyarrow
