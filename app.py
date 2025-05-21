@@ -10,7 +10,7 @@ if os.path.exists("logo.png"):
 st.sidebar.markdown("### Roof-Window Knowledge-Bot\nUK market – Proof of Concept")
 
 for q in (
-    "Show all BETTER ENERGY roof windows",
+    "Which windows are avaialable in U8A size",
     "Which windows use Krypton gas?",
     "Download an Excel of centre-pivot models ≥78 cm wide"
 ):
