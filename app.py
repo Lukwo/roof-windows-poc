@@ -19,31 +19,6 @@ load_dotenv()
 
 st.set_page_config(page_title="Roof-Window Assistant", page_icon="🪟")
 
-# ───── sidebar ────────────────────────────────────────────────────
-if os.path.exists("logo.png"):
-    st.sidebar.image("logo.png", width=160)
-else:
-    st.sidebar.markdown("### Roof-Window Knowledge-Bot\n_UK market – PoC_")
-
-example_questions = [
-    "Show all BETTER ENERGY roof windows",
-    "Which windows use Krypton gas?",
-    "Download an Excel of centre-pivot models ≥78 cm wide",
-    "Are there any models with an internal white finish?",
-    "What are the installation pitch ranges for VELUX windows?",
-]
-for q in example_questions:
-    if st.sidebar.button(q, key=f"example_q_{q}"):
-        st.session_state["prompt"] = q
-        st.session_state.chat = [{"role": "system", "content": SYSTEM_PROMPT}]
-
-if st.sidebar.button("🔄 Reset chat"):
-    keys_to_pop = ["prompt", "sql_query_from_ai", "query_result_df", "want_excel_download"]
-    for key in keys_to_pop:
-        st.session_state.pop(key, None)
-    st.session_state.chat = [{"role": "system", "content": SYSTEM_PROMPT}]
-    st.rerun()
-
 # ───── load data ───────────────────────────────────────────────────
 @st.cache_data
 def load_data() -> pd.DataFrame:
@@ -100,6 +75,32 @@ Column descriptions: {COLUMNS_DESCRIPTIONS_GUIDE}
 Table name: `roof_df`.
 """
 
+# ───── sidebar ────────────────────────────────────────────────────
+if os.path.exists("logo.png"):
+    st.sidebar.image("logo.png", width=160)
+else:
+    st.sidebar.markdown("### Roof-Window Knowledge-Bot\n_UK market – PoC_")
+
+example_questions = [
+    "Show all BETTER ENERGY roof windows",
+    "Which windows use Krypton gas?",
+    "Download an Excel of centre-pivot models ≥78 cm wide",
+    "Are there any models with an internal white finish?",
+    "What are the installation pitch ranges for VELUX windows?",
+]
+for q in example_questions:
+    if st.sidebar.button(q, key=f"example_q_{q}"):
+        st.session_state["prompt"] = q
+        st.session_state.chat = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+if st.sidebar.button("🔄 Reset chat"):
+    keys_to_pop = ["prompt", "sql_query_from_ai", "query_result_df", "want_excel_download"]
+    for key in keys_to_pop:
+        st.session_state.pop(key, None)
+    st.session_state.chat = [{"role": "system", "content": SYSTEM_PROMPT}]
+    st.rerun()
+
+# ───── Initialize Chat History ─────────────────────────────────────
 if "chat" not in st.session_state or not st.session_state.chat or st.session_state.chat[0].get("role") != "system":
     if 'SYSTEM_PROMPT' not in globals():
         st.error("System prompt not defined.")

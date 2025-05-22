@@ -1,9 +1,7 @@
-streamlit
-pandas
+streamlit==1.45.1
+pandas==2.2.3
 duckdb==1.3.0
-openpyxl
-xlsxwriter
-python-dotenv
-openai
-pyarrow
-rapidfuzz
+openai==1.81.0
+python-dotenv==1.1.0
+rapidfuzz==3.13.0
+xlsxwriter==3.2.3
