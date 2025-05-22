@@ -155,8 +155,25 @@ if not user_prompt:
     st.info("Ask a question using the input box above, or select an example from the sidebar.")
     st.stop()
 
-# Add user's message to chat history, but only if it's new
-if not st.session_state.chat or st.session_state.chat[-1].get("content") != user_prompt or st.session_state.chat[-1].get("role") != "user":
+# Add user's message to chat history, but only if it's new or different from the last user message
+# This also handles the case where the last message was from the assistant.
+add_user_message_to_history = True
+if st.session_state.chat:
+    last_message_in_history = st.session_state.chat[-1]
+    last_message_content = ""
+    last_message_role = ""
+
+    if isinstance(last_message_in_history, dict): # Previously added user message
+        last_message_content = last_message_in_history.get("content")
+        last_message_role = last_message_in_history.get("role")
+    elif hasattr(last_message_in_history, 'content') and hasattr(last_message_in_history, 'role'): # Assistant message object
+        last_message_content = last_message_in_history.content
+        last_message_role = last_message_in_history.role
+    
+    if last_message_role == "user" and last_message_content == user_prompt:
+        add_user_message_to_history = False
+
+if add_user_message_to_history:
     st.session_state.chat.append({"role": "user", "content": user_prompt})
 
 
@@ -196,8 +213,11 @@ except Exception as e:
     st.stop()
 
 assistant_message = response.choices[0].message
-if assistant_message not in st.session_state.chat: # Avoid duplicating if already added
+# Add assistant's message to chat history if it's not already the last one
+# This check is basic and might not perfectly prevent all object duplicates if instances change
+if not st.session_state.chat or st.session_state.chat[-1] != assistant_message:
     st.session_state.chat.append(assistant_message)
+
 
 if not assistant_message.tool_calls or len(assistant_message.tool_calls) == 0:
     if assistant_message.content:
@@ -274,6 +294,7 @@ st.code(final_sql_query, language="sql")
 
 # ───── Execute SQL Query ──────────────────────────────────────────
 try:
+    # Using duckdb.query_df which expects the DataFrame, its name in SQL, and the query.
     query_result_df = duckdb.query_df(roof_df, TABLE_NAME_IN_SQL, final_sql_query).df()
     st.session_state["query_result_df"] = query_result_df
 except Exception as e:
